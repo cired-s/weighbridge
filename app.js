@@ -6,26 +6,27 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
-// 創建兩個 LayerGroup：一個是磅秤資訊，另一個是商家資訊
+// 創建兩個 LayerGroup：一個是磅秤資訊，另一個是地磅資訊
 const scaleLayer = L.layerGroup().addTo(map);
 const storeLayer = L.layerGroup().addTo(map);
 
-// 從 data.json 讀取磅秤資料並在地圖上顯示
-fetch('data.json')
+// 從 scale-data.json 讀取磅秤資料並在地圖上顯示
+fetch('scale-data.json')
     .then(response => response.json())
     .then(data => {
         data.forEach(item => {
-            // 在磅秤圖層中標記每個磅秤的位置
             const scaleMarker = L.marker([item.latitude, item.longitude]).addTo(scaleLayer);
-
-            // 為每個標記綁定 Popup，顯示磅秤資訊
             scaleMarker.bindPopup(`
                 <b>${item.店名}</b><br>
                 廠牌: ${item.廠牌}<br>
                 型式: ${item.型式}<br>
                 器號: ${item.器號}<br>
-                檢查合格日期: ${item.檢查合格日期}<br>
-                檢定合格日期: ${item.檢定合格日期}
+                Max (kg): ${item.Max_kg}<br>
+                e (g): ${item.e_g}<br>
+                檢查日期: ${item.檢查日期}<br>
+                檢查合格與否: ${item.檢查合格與否}<br>
+                檢定日期: ${item.檢定日期}<br>
+                檢定合格單號: ${item.檢定合格單號}
             `);
         });
     })
@@ -33,17 +34,35 @@ fetch('data.json')
         console.error('Error loading the JSON file:', error);
     });
 
-// 添加商家資訊到商家圖層（可以是靜態資訊或來自另一個 API）
-L.marker([25.03, 121.51])
-    .addTo(storeLayer)
-    .bindPopup("夢時代購物中心")
-    .openPopup();
+// 從 weighbridge-data.json 讀取地磅資料並在地圖上顯示
+fetch('weighbridge-data.json')
+    .then(response => response.json())
+    .then(data => {
+        data.forEach(item => {
+            const storeMarker = L.marker([item.latitude, item.longitude]).addTo(storeLayer);
+            storeMarker.bindPopup(`
+                <b>${item.所有人}</b><br>
+                地址: ${item.地址}<br>
+                廠牌: ${item.廠牌}<br>
+                型號: ${item.型號}<br>
+                器號: ${item.器號}<br>
+                Max (t): ${item.Max_t}<br>
+                e (kg): ${item.e_kg}<br>
+                檢定日期: ${item.檢定日期}<br>
+                檢定合格單號: ${item.檢定合格單號}<br>
+                案號: ${item.案號}
+            `);
+        });
+    })
+    .catch(error => {
+        console.error('Error loading the JSON file:', error);
+    });
 
 // 添加圖層控制，讓用戶可以選擇顯示哪些圖層
 const baseLayers = {};
 const overlays = {
     "磅秤資訊": scaleLayer,
-    "商家資訊": storeLayer
+    "地磅資訊": storeLayer
 };
 
 L.control.layers(baseLayers, overlays).addTo(map);
