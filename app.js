@@ -69,14 +69,16 @@ fetch('scale-data.json')
     .then(data => {
         scaleData = data;
         applyFilter();  // 初始顯示全部資料
-    });
+    })
+    .catch(error => console.error('Error loading scale data:', error));
 
 fetch('weighbridge-data.json')
     .then(response => response.json())
     .then(data => {
         weighbridgeData = data;
         applyFilter();  // 初始顯示全部資料
-    });
+    })
+    .catch(error => console.error('Error loading weighbridge data:', error));
 
 // 添加篩選功能
 document.getElementById('apply-filter').addEventListener('click', applyFilter);
