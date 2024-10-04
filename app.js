@@ -1,160 +1,172 @@
-// 初始化 Leaflet 地圖，中心點設為台灣 (可以根據需求調整經緯度)
+// 初始化 Leaflet 地圖，中心點設為台灣
 const map = L.map('map').setView([25.03236, 121.51813], 10);
 
-// 設定地圖圖層，這裡使用 OpenStreetMap 圖層
+// 設定地圖圖層，使用 OpenStreetMap
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
-// 創建兩個 LayerGroup：一個是磅秤資訊，另一個是地磅資訊
+// 創建 LayerGroup：磅秤與地磅
 const scaleLayer = L.layerGroup();
-const storeLayer = L.layerGroup();
+const weighbridgeLayer = L.layerGroup();
 
-// 定義自定義的圖示
+// 定義自定義圖示
 const greenIcon = L.icon({
-    iconUrl: 'images/marker-icon-2x-green.png',  // 這裡你需要提供一個綠色圖示的 URL預設為地秤圖
-    iconSize: [25, 41], // 標記圖示的大小
-    iconAnchor: [12, 41], // 標記的錨點位置
-    popupAnchor: [1, -34], // 彈出視窗的錨點位置
+    iconUrl: 'images/marker-icon-2x-green.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34]
 });
-
 const blueIcon = L.icon({
-    iconUrl: 'images/marker-icon-2x-blue.png',  // 這裡你需要提供一個藍色圖示的 URL預設為磅秤圖
+    iconUrl: 'images/marker-icon-2x-blue.png',
     iconSize: [25, 41],
     iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
+    popupAnchor: [1, -34]
 });
-
 const redIcon = L.icon({
-    iconUrl: 'images/marker-icon-2x-red.png',  // 這裡你需要提供一個紅色圖示的 URL預設為不合格圖
+    iconUrl: 'images/marker-icon-2x-red.png',
     iconSize: [25, 41],
     iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
+    popupAnchor: [1, -34]
 });
 
-// 計算磅秤和地磅的數量
+// 加入圖層控制
+const baseLayers = {};
+const overlays = {
+    "磅秤": scaleLayer,
+    "地磅": weighbridgeLayer
+};
+L.control.layers(baseLayers, overlays).addTo(map);
+
+// 初始化數量
 let scaleCount = 0;
-let storeCount = 0;
+let weighbridgeCount = 0;
 
-// 自定義控制器來顯示磅秤和地磅數量
+// 計算磅秤和地磅的數量並顯示在右下角
 const infoControl = L.control({ position: 'bottomright' });
-
 infoControl.onAdd = function(map) {
     const div = L.DomUtil.create('div', 'leaflet-control-info');
-    div.innerHTML = `<b>磅秤數量:</b> ${scaleCount}<br><b>地秤數量:</b> ${storeCount}`;
+    div.innerHTML = `<b>磅秤數量:</b> ${scaleCount}<br><b>地磅數量:</b> ${weighbridgeCount}`;
     return div;
 };
-
-// 將控制器添加到地圖
 infoControl.addTo(map);
 
 // 更新數量顯示
 function updateInfoControl() {
     const infoDiv = document.querySelector('.leaflet-control-info');
     if (infoDiv) {
-        infoDiv.innerHTML = `<b>磅秤數量:</b> ${scaleCount}<br><b>地秤數量:</b> ${storeCount}`;
+        infoDiv.innerHTML = `<b>磅秤數量:</b> ${scaleCount}<br><b>地磅數量:</b> ${weighbridgeCount}`;
     }
 }
 
-// 初始化時更新控制欄框
-updateInfoControl();
-
-// 讀取磅秤和地磅資料並篩選
+// 讀取 JSON 資料
 let scaleData = [];
 let weighbridgeData = [];
 
+// 一開始讀取全部資料，並顯示在地圖上
 fetch('scale-data.json')
     .then(response => response.json())
     .then(data => {
         scaleData = data;
-        applyFilter(); // 初次讀取後顯示資料
-    })
-    .catch(error => {
-        console.error('Error loading the scale-data.json file:', error);
+        applyFilter();  // 初始顯示全部資料
     });
 
 fetch('weighbridge-data.json')
     .then(response => response.json())
     .then(data => {
         weighbridgeData = data;
-        applyFilter(); // 初次讀取後顯示資料
-    })
-    .catch(error => {
-        console.error('Error loading the weighbridge-data.json file:', error);
+        applyFilter();  // 初始顯示全部資料
     });
 
-// 添加篩選條件並顯示資料
+// 添加篩選功能
 document.getElementById('apply-filter').addEventListener('click', applyFilter);
 
 function applyFilter() {
-    // 清空圖層和計數
+    // 清空圖層與計數
     scaleLayer.clearLayers();
-    storeLayer.clearLayers();
+    weighbridgeLayer.clearLayers();
     scaleCount = 0;
-    storeCount = 0;
+    weighbridgeCount = 0;
 
+    // 獲取多選的縣市
     const selectedCities = Array.from(document.getElementById('city-filter').selectedOptions).map(option => option.value);
     const selectedLayer = document.getElementById('layer-filter').value;
 
-    // 過濾磅秤資料
+    // 如果沒有選擇縣市，預設顯示全部縣市
+    const citiesToFilter = selectedCities.length > 0 ? selectedCities : scaleData.concat(weighbridgeData).map(item => item.縣市);
+
+    // 過濾並顯示磅秤資料
     if (selectedLayer === 'all' || selectedLayer === 'scale') {
         scaleData.forEach(item => {
-            if (selectedCities.includes(item.縣市)) {
-                const checkResult = String(item.檢查合格與否).trim().toUpperCase();
-                const markerIcon = checkResult === "N" ? redIcon : blueIcon;
-                
-                const scaleMarker = L.marker([item.latitude, item.longitude], { icon: markerIcon }).addTo(scaleLayer);
-                scaleMarker.bindPopup(`
-                    <h2>市場磅秤</h2>
-                    <b>${item.店名 || '無'}</b><br>
-                    廠牌: ${item.廠牌 || '無'}<br>
-                    型式: ${item.型式 || '無'}<br>
-                    器號: ${item.器號 || '無'}<br>
-                    Max (kg): ${item.Max_kg || '無'}<br>
-                    e (g): ${item.e_g || '無'}<br>
-                    檢定日期: ${item.檢定日期 || '無'}<br>
-                    檢定合格單號: ${item.檢定合格單號 || '無'}<br>
-                    檢查日期: ${item.檢查日期 || '無'}<br>
-                    檢查合格單號: ${item.檢查合格單號 || '無'}<br>
-                    檢查合格與否: ${item.檢查合格與否 || '無'}
+            if (citiesToFilter.includes(item.縣市)) {
+                const markerIcon = item.檢查合格與否 === 'N' ? redIcon : blueIcon;
+                const marker = L.marker([item.latitude, item.longitude], { icon: markerIcon }).addTo(scaleLayer);
+                marker.bindPopup(`
+                <h2>市場磅秤</h2>
+                <b>${item.店名 || '無'}</b><br>
+                廠牌: ${item.廠牌 || '無'}<br>
+                型式: ${item.型式 || '無'}<br>
+                器號: ${item.器號 || '無'}<br>
+                Max (kg): ${item.Max_kg || '無'}<br>
+                e (g): ${item.e_g || '無'}<br>
+                檢定日期: ${item.檢定日期 || '無'}<br>
+                檢定合格單號: ${item.檢定合格單號 || '無'}<br>
+                檢查日期: ${item.檢查日期 || '無'}<br>
+                檢查合格單號: ${item.檢查合格單號 || '無'}<br>
+                檢查合格與否: ${item.檢查合格與否 || '無'}
                 `);
                 scaleCount++;
             }
         });
     }
 
-    // 過濾地磅資料
+    // 過濾並顯示地磅資料
     if (selectedLayer === 'all' || selectedLayer === 'weighbridge') {
         weighbridgeData.forEach(item => {
-            if (selectedCities.includes(item.縣市)) {
-                const weighbridgeMarker = L.marker([item.latitude, item.longitude], { icon: greenIcon }).addTo(storeLayer);
-                weighbridgeMarker.bindPopup(`
-                    <h2>市場地磅</h2>
-                    <b>${item.店名 || '無'}</b><br>
-                    廠牌: ${item.廠牌 || '無'}<br>
-                    型式: ${item.型式 || '無'}<br>
-                    器號: ${item.器號 || '無'}<br>
-                    Max (kg): ${item.Max_kg || '無'}<br>
-                    e (g): ${item.e_g || '無'}<br>
-                    檢定日期: ${item.檢定日期 || '無'}<br>
-                    檢定合格單號: ${item.檢定合格單號 || '無'}<br>
-                    檢查日期: ${item.檢查日期 || '無'}<br>
-                    檢查合格單號: ${item.檢查合格單號 || '無'}<br>
-                    檢查合格與否: ${item.檢查合格與否 || '無'}
+            if (citiesToFilter.includes(item.縣市)) {
+                const marker = L.marker([item.latitude, item.longitude], { icon: greenIcon }).addTo(weighbridgeLayer);
+                marker.bindPopup(`
+                <h2>市場地磅</h2>
+                <b>${item.店名 || '無'}</b><br>
+                廠牌: ${item.廠牌 || '無'}<br>
+                型式: ${item.型式 || '無'}<br>
+                器號: ${item.器號 || '無'}<br>
+                Max (kg): ${item.Max_kg || '無'}<br>
+                e (g): ${item.e_g || '無'}<br>
+                檢定日期: ${item.檢定日期 || '無'}<br>
+                檢定合格單號: ${item.檢定合格單號 || '無'}<br>
+                檢查日期: ${item.檢查日期 || '無'}<br>
+                檢查合格單號: ${item.檢查合格單號 || '無'}<br>
+                檢查合格與否: ${item.檢查合格與否 || '無'}
                 `);
-                storeCount++;
+                weighbridgeCount++;
             }
         });
     }
+
+    // 更新數量顯示
+    updateInfoControl();
 
     // 將圖層添加到地圖
     if (selectedLayer === 'all' || selectedLayer === 'scale') {
         scaleLayer.addTo(map);
     }
     if (selectedLayer === 'all' || selectedLayer === 'weighbridge') {
-        storeLayer.addTo(map);
+        weighbridgeLayer.addTo(map);
     }
+}
 
+
+
+
+
+
+                    
+
+
+
+                    
+              
     // 更新資訊顯示
     updateInfoControl();
 }
