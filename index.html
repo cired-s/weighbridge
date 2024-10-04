@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -21,29 +21,23 @@
             border-radius: 5px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
         }
-        /* 新增選單樣式 */
-        #filter-controls {
-            margin-bottom: 10px;
-        }
     </style>
 </head>
 <body>
     <h1>度量衡器-地圖</h1>
-
-    <!-- 選擇篩選的縣市和圖層 -->
-    <div id="filter-controls">
-        <label for="city-filter">選擇縣市:</label>
+    <div>
+        <label for="city-filter">選擇縣市：</label>
         <select id="city-filter" multiple>
             <option value="臺北市">臺北市</option>
             <option value="新北市">新北市</option>
-            <!-- 可新增更多縣市 -->
+            <!-- 可以繼續添加其他縣市 -->
         </select>
 
-        <label for="layer-filter">選擇圖層:</label>
+        <label for="layer-filter">選擇層：</label>
         <select id="layer-filter">
-            <option value="all">全部顯示</option>
-            <option value="scale">磅秤</option>
-            <option value="weighbridge">地秤</option>
+            <option value="all">顯示全部</option>
+            <option value="scale">只顯示磅秤</option>
+            <option value="weighbridge">只顯示地磅</option>
         </select>
 
         <button id="apply-filter">應用篩選</button>
@@ -54,3 +48,4 @@
     <script src="app.js"></script>
 </body>
 </html>
+
