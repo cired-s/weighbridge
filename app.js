@@ -124,9 +124,10 @@ function applyFilter() {
     if (selectedLayer === 'all' || selectedLayer === 'weighbridge') {
         weighbridgeData.forEach(item => {
             if (citiesToFilter.includes(item.縣市)) {
-                const marker = L.marker([item.latitude, item.longitude], { icon: greenIcon }).addTo(weighbridgeLayer);
+                const marker_aIcon = item.檢查合格與否 === 'N' ? redIcon : greenIcon;
+                const marker = L.marker([item.latitude, item.longitude], { icon: marker_aIcon }).addTo(weighbridgeLayer);
                 marker.bindPopup(`
-                <h2>市場地磅</h2>
+                <h2>固定地磅</h2>
                 <b>${item.店名 || '無'}</b><br>
                 廠牌: ${item.廠牌 || '無'}<br>
                 型式: ${item.型式 || '無'}<br>
