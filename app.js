@@ -93,6 +93,7 @@ function applyFilter() {
     // 獲取多選的縣市
     const selectedCities = Array.from(document.getElementById('city-filter').selectedOptions).map(option => option.value);
     const selectedLayer = document.getElementById('layer-filter').value;
+      
 
     // 如果沒有選擇縣市，預設顯示臺北市、新北市與基隆市
     const defaultCities = ['臺北市', '新北市', '基隆市'];
@@ -102,7 +103,7 @@ function applyFilter() {
     // 過濾並顯示磅秤資料
     if (selectedLayer === 'all' || selectedLayer === 'scale') {
         scaleData.forEach(item => {
-            if (citiesToFilter.includes(item.縣市)) {
+            if (citiesToFilter.includes(item.縣市)) { // 如果磅秤資料屬於選擇的縣市之一
                 const markerIcon = item.檢查合格與否 === 'N' ? redIcon : blueIcon;
                 const marker = L.marker([item.latitude, item.longitude], { icon: markerIcon }).addTo(scaleLayer);
                 marker.bindPopup(`
@@ -154,13 +155,11 @@ function applyFilter() {
     updateInfoControl();
 
     // 將圖層添加到地圖
-    if (selectedLayer === 'all' || selectedLayer === 'scale') {
+    
         scaleLayer.addTo(map);
-    }
-    if (selectedLayer === 'all' || selectedLayer === 'weighbridge') {
+    
         weighbridgeLayer.addTo(map);
-    }
-}
+ }
 
 
 
