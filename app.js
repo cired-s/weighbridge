@@ -94,8 +94,10 @@ function applyFilter() {
     const selectedCities = Array.from(document.getElementById('city-filter').selectedOptions).map(option => option.value);
     const selectedLayer = document.getElementById('layer-filter').value;
 
-    // 如果沒有選擇縣市，預設顯示全部縣市
-    const citiesToFilter = selectedCities.length > 0 ? selectedCities : scaleData.concat(weighbridgeData).map(item => item.縣市);
+    // 如果沒有選擇縣市，預設顯示臺北市、新北市與基隆市
+    const defaultCities = ['臺北市', '新北市', '基隆市'];
+    const citiesToFilter = selectedCities.length > 0 ? selectedCities : defaultCities;
+    
 
     // 過濾並顯示磅秤資料
     if (selectedLayer === 'all' || selectedLayer === 'scale') {
