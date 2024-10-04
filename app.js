@@ -161,15 +161,3 @@ function applyFilter() {
 
 
 
-
-
-                    
-
-
-
-                    
-              
-    // 更新資訊顯示
-    updateInfoControl();
-}
-
