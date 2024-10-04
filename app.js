@@ -137,7 +137,10 @@ function applyFilter() {
                     Max (kg): ${item.Max_kg || '無'}<br>
                     e (g): ${item.e_g || '無'}<br>
                     檢定日期: ${item.檢定日期 || '無'}<br>
-                    檢定合格單號: ${item.檢定合格單號 || '無'}
+                    檢定合格單號: ${item.檢定合格單號 || '無'}<br>
+                    檢查日期: ${item.檢查日期 || '無'}<br>
+                    檢查合格單號: ${item.檢查合格單號 || '無'}<br>
+                    檢查合格與否: ${item.檢查合格與否 || '無'}
                 `);
                 storeCount++;
             }
