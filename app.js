@@ -104,6 +104,8 @@ function applyFilter() {
     if (selectedLayer === 'all' || selectedLayer === 'scale') {
         scaleData.forEach(item => {
             if (citiesToFilter.includes(item.縣市)) { // 如果磅秤資料屬於選擇的縣市之一
+                // 將 "檢查合格與否" 強制轉換為字串並進行 trim 操作
+                const checkResult = String(item.檢查合格與否).trim().toUpperCase();
                 const markerIcon = item.檢查合格與否 === 'N' ? redIcon : blueIcon;
                 const marker = L.marker([item.latitude, item.longitude], { icon: markerIcon }).addTo(scaleLayer);
                 marker.bindPopup(`
@@ -129,22 +131,24 @@ function applyFilter() {
     if (selectedLayer === 'all' || selectedLayer === 'weighbridge') {
         weighbridgeData.forEach(item => {
             if (citiesToFilter.includes(item.縣市)) {
-                const marker_aIcon = item.檢查合格與否 === 'N' ? redIcon : greenIcon;
-                const marker = L.marker([item.latitude, item.longitude], { icon: marker_aIcon }).addTo(weighbridgeLayer);
-                marker.bindPopup(`
+                // 將 "檢查合格與否" 強制轉換為字串並進行 trim 操作
+                const checkResult = String(item.檢查合格與否).trim().toUpperCase();
+                const markerIcon = item.檢查合格與否 === 'N' ? redIcon : greenIcon;
+                const weighbridgemarker = L.marker([item.latitude, item.longitude], { icon: markerIcon }).addTo(weighbridgeLayer);
+                weighbridgemarker.bindPopup(`
                 <h2>固定地秤</h2>  <!-- 添加"固定地秤"標題 -->
-                <b>${item.所有人}</b><br>
-                地址: ${item.地址}<br>
-                廠牌: ${item.廠牌}<br>
-                型號: ${item.型號}<br>
-                器號: ${item.器號}<br>
-                Max (t): ${item.Max_t}<br>
-                e (kg): ${item.e_kg}<br>
-                檢定合格期限: ${item.檢定合格期限}<br>
-                檢定合格單號: ${item.檢定合格單號}<br>
-                檢查日期: ${item.檢查日期}<br>
-                檢查合格單號: ${item.檢查合格單號}<br>
-                檢查合格與否: ${item.檢查合格與否}
+                <b>${item.所有人|| '無'}</b><br>
+                地址: ${item.地址|| '無'}<br>
+                廠牌: ${item.廠牌|| '無'}<br>
+                型號: ${item.型號|| '無'}<br>
+                器號: ${item.器號|| '無'}<br>
+                Max (t): ${item.Max_t|| '無'}<br>
+                e (kg): ${item.e_kg|| '無'}<br>
+                檢定合格期限: ${item.檢定合格期限|| '無'}<br>
+                檢定合格單號: ${item.檢定合格單號|| '無'}<br>
+                檢查日期: ${item.檢查日期|| '無'}<br>
+                檢查合格單號: ${item.檢查合格單號|| '無'}<br>
+                檢查合格與否: ${item.檢查合格與否|| '無'}
                 `);
                 weighbridgeCount++;
             }
