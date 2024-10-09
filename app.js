@@ -112,7 +112,7 @@ function applyFilter() {
                 <h2>市場磅秤</h2>
                 <b>${item.店名 || '無'}</b><br>
                 廠牌: ${item.廠牌 || '無'}<br>
-                型式: ${item.型式 || '無'}<br>
+                型號: ${item.型號 || '無'}<br>
                 器號: ${item.器號 || '無'}<br>
                 Max (kg): ${item.Max_kg || '無'}<br>
                 e (g): ${item.e_g || '無'}<br>
