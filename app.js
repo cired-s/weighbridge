@@ -90,8 +90,9 @@ function applyFilter() {
     scaleCount = 0;
     weighbridgeCount = 0;
 
-    // 獲取多選的縣市
-    const selectedCities = Array.from(document.getElementById('city-filter').selectedOptions).map(option => option.value);
+    // 獲取多選的縣市，並將 "台" 統一轉換為 "臺"
+    const selectedCities = Array.from(document.getElementById('city-filter').selectedOptions)
+                                .map(option => option.value.replace(/台/g, '臺'));
     const selectedLayer = document.getElementById('layer-filter').value;
       
 
@@ -103,6 +104,8 @@ function applyFilter() {
     // 過濾並顯示磅秤資料
     if (selectedLayer === 'all' || selectedLayer === 'scale') {
         scaleData.forEach(item => {
+            // 將資料中的 "台" 轉換為 "臺"，以匹配篩選條件
+            const cityName = item.縣市.replace(/台/g, '臺');
             if (citiesToFilter.includes(item.縣市)) { // 如果磅秤資料屬於選擇的縣市之一
                 // 將 "檢查合格與否" 強制轉換為字串並進行 trim 操作
                 const checkResult = String(item.檢查合格與否).trim().toUpperCase();
@@ -130,6 +133,8 @@ function applyFilter() {
     // 過濾並顯示地磅資料
     if (selectedLayer === 'all' || selectedLayer === 'weighbridge') {
         weighbridgeData.forEach(item => {
+            // 將資料中的 "台" 轉換為 "臺"，以匹配篩選條件
+            const cityName = item.縣市.replace(/台/g, '臺');
             if (citiesToFilter.includes(item.縣市)) {
                 // 將 "檢查合格與否" 強制轉換為字串並進行 trim 操作
                 const checkResult = String(item.檢查合格與否).trim().toUpperCase();
