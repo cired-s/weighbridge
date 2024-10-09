@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>度量衡器-地圖</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  
+    <script src="leaflet.js"></script>
+    <style>
+        #map {
+            height: 500px;
+        }
+        /* 自定義控制欄框樣式 */
+        .leaflet-control-info {
+            background-color: white;
+            padding: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <h1>度量衡器-地圖</h1>
+    <div>
+        <label for="city-filter">選擇縣市：</label>
+        <select id="city-filter" multiple>
+            <option value="臺北市">臺北市</option>
+            <option value="新北市">新北市</option>
+            <option value="基隆市">基隆市</option> <!-- 新增基隆市選項 -->
+            <!-- 可以繼續添加其他縣市 -->
+        </select>
+
+        <label for="layer-filter">選擇層：</label>
+        <select id="layer-filter">
+            <option value="all">顯示全部</option>
+            <option value="scale">磅秤</option>
+            <option value="weighbridge">地秤</option>
+        </select>
+
+        <button id="apply-filter">應用篩選</button>
+    </div>
+
+    <div id="map"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
+
