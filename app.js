@@ -55,7 +55,7 @@ infoControl.addTo(map);
 function updateInfoControl() {
     const infoDiv = document.querySelector('.leaflet-control-info');
     if (infoDiv) {
-        infoDiv.innerHTML = `<b>磅秤數量:</b> ${scaleCount}<br><b>地磅數量:</b> ${weighbridgeCount}`;
+        infoDiv.innerHTML = `<b>磅秤數量:</b> ${scaleCount}<br><b>地秤數量:</b> ${weighbridgeCount}`;
     }
 }
 
