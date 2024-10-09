@@ -34,7 +34,7 @@ const redIcon = L.icon({
 const baseLayers = {};
 const overlays = {
     "磅秤": scaleLayer,
-    "地磅": weighbridgeLayer
+    "地秤": weighbridgeLayer
 };
 L.control.layers(baseLayers, overlays).addTo(map);
 
@@ -46,7 +46,7 @@ let weighbridgeCount = 0;
 const infoControl = L.control({ position: 'bottomright' });
 infoControl.onAdd = function(map) {
     const div = L.DomUtil.create('div', 'leaflet-control-info');
-    div.innerHTML = `<b>磅秤數量:</b> ${scaleCount}<br><b>地磅數量:</b> ${weighbridgeCount}`;
+    div.innerHTML = `<b>磅秤數量:</b> ${scaleCount}<br><b>地秤數量:</b> ${weighbridgeCount}`;
     return div;
 };
 infoControl.addTo(map);
